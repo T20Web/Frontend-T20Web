@@ -1,0 +1,135 @@
+:root{
+  --bg: #ffffff;
+  --card-bg: #ffffff;
+  --text: #15171d;
+  --muted: #6b7280;
+  --primary: #1f2937;
+  --accent: #0ea5a4;
+  --danger: #ef4444;
+  --radius: 8px;
+  --gap: 12px;
+  --max-width: 1100px;
+  font-size: 16px;
+}
+
+* { box-sizing: border-box; }
+
+html,body,#app {
+  height: 100%;
+}
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  font-size: 16px;
+  line-height: 1.45;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+body, body * {
+  color: inherit !important;
+}
+
+#app > main {
+  max-width: var(--max-width);
+  margin: 24px auto;
+  padding: 0 16px;
+}
+
+header, footer {
+  background: linear-gradient(180deg, #f8fafc, #ffffff);
+  border-bottom: 1px solid #e6edf3;
+  color: var(--text);
+}
+
+button, .btn {
+  display: inline-block;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.btn {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: rgba(0,0,0,0.06);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--primary);
+  border: 1px solid #e6edf3;
+}
+
+input, textarea, select, button {
+  color: var(--text) !important;
+  font: inherit;
+}
+
+input, textarea, select {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  padding: 8px 10px;
+  border-radius: 8px;
+  outline: none;
+  transition: box-shadow .12s ease, border-color .12s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(14,165,164,0.08);
+}
+
+ul { padding-left: 1.25rem; }
+
+li, .card {
+  background: var(--card-bg);
+  border: 1px solid #eef2f6;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal {
+  background: #ffffff;
+  color: var(--text);
+  border-radius: var(--radius);
+  padding: 18px;
+  max-width: 680px;
+  width: 95%;
+  box-shadow: 0 10px 30px rgba(2,6,23,0.12);
+}
+
+.error, .alert {
+  color: var(--danger);
+  font-weight: 600;
+}
+.small-muted {
+  color: var(--muted);
+  font-size: .9rem;
+}
+
+@media (max-width: 640px) {
+  body { font-size: 15px; }
+  .modal { padding: 12px; }
+}
+
+input, textarea, select, button, a {
+  color: var(--text) !important;
+}
