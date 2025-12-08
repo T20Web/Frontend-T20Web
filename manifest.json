@@ -19,8 +19,8 @@
       "isJpg": false,
       "width": 512,
       "is512x512": true,
-      "is256x256": false,
-      "is192x192": false
+      "is256x256": true,
+      "is192x192": true
     }
   ],
   "lang": "pt"
