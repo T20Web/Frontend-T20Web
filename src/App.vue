@@ -1,18 +1,41 @@
 <template>
-  <div id="app">
-    <header style="padding:16px; border-bottom:1px solid #eee;">
-      <h1>T20Web — Fichas</h1>
-    </header>
-
-    <main style="padding:16px;">
-      <Home />
+  <div class="site-wrapper">
+    <Navbar />
+    <main class="site-main">
+      <router-view />
     </main>
-
-    <footer style="padding:16px; border-top:1px solid #eee; margin-top:32px;">
-
-    </footer>
+    <Footer />
   </div>
 </template>
+
 <script setup>
-import Home from "./components/Home.vue";
+import { ref } from "vue";
+import router from "./router";
+import { logout } from "./api";
+import Navbar from "./components/Navbar.vue";
+import Footer from "./components/Footer.vue";
+
+const token = ref(localStorage.getItem("token"));
+
+function doLogout() {
+  logout();
+  token.value = null;
+  router.push({ name: "login" });
+}
 </script>
+
+<style>
+.site-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+
+.site-main {
+  flex: 1;
+  max-width: var(--max-width);
+  margin: 32px auto;
+  padding: 0 16px;
+}
+</style>

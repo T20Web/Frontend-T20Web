@@ -1,9 +1,57 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="src/assets/T20WebIcon__1_-removebg-preview.png" />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="src/assets/T20WebIcon__1_-removebg-preview.png"
+    />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <script>
+      (function () {
+        try {
+          const KEY = "t20_theme";
+          const stored = localStorage.getItem(KEY);
+
+          const systemPrefersDark =
+            window.matchMedia &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+          const theme =
+            stored === "dark" || stored === "light"
+              ? stored
+              : systemPrefersDark
+              ? "dark"
+              : "light";
+
+          if (theme === "dark") {
+            document.documentElement.setAttribute("data-theme", "dark");
+          } else {
+            document.documentElement.removeAttribute("data-theme");
+          }
+
+          window.__t20_theme = {
+            current: theme,
+            key: KEY,
+            set: (t) => {
+              if (t === "dark")
+                document.documentElement.setAttribute("data-theme", "dark");
+              else document.documentElement.removeAttribute("data-theme");
+              localStorage.setItem(KEY, t);
+            },
+            clear: () => {
+              localStorage.removeItem(KEY);
+              document.documentElement.removeAttribute("data-theme");
+            },
+          };
+        } catch (e) {
+          console.warn("Theme init error", e);
+        }
+      })();
+    </script>
+
     <title>T20Web</title>
   </head>
   <body>

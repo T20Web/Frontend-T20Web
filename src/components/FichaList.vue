@@ -1,34 +1,76 @@
 <template>
-  <div>
-    <div v-if="!fichas.length">Nenhuma ficha encontrada.</div>
-    <ul>
-      <li v-for="f in fichas" :key="f.id" style="margin-bottom:8px; padding:8px; border:1px solid #eee; border-radius:6px;">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <div>
-            <strong>{{ f.nome }}</strong> — {{ f.classe || "—" }} — Nível {{ f.nivel }}
-            <div style="font-size:12px; color:#666">{{ f.raca || "" }} • Jogador: {{ f.jogador || "—" }}</div>
-          </div>
-          <div style="display:flex; gap:8px;">
-            <button @click="$emit('edit', f)">Editar</button>
-            <button @click="$emit('export', f.id)">Export</button>
-            <button @click="$emit('delete', f.id)">Apagar</button>
-          </div>
+  <section>
+    <h2>Fichas</h2>
+
+    <div style="margin-bottom:12px;">
+      <button @click="novo">Criar ficha</button>
+    </div>
+
+    <div v-if="loading">Carregando fichas...</div>
+    <div v-else-if="error" style="color:tomato">{{ error }}</div>
+    <ul v-else>
+      <li v-for="f in fichas" :key="f.id" style="margin-bottom:8px;">
+        <strong>{{ f.title }}</strong> — <small>{{ f.description }}</small>
+        <div style="margin-top:4px;">
+          <button @click="ver(f.id)">Ver</button>
+          <button @click="editar(f.id)">Editar</button>
         </div>
       </li>
     </ul>
-  </div>
+
+    <div v-if="!fichas.length && !loading">Nenhuma ficha encontrada.</div>
+  </section>
 </template>
 
 <script setup>
-defineProps({ fichas: { type: Array, default: () => [] } });
-</script>
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { listFichas } from "../api";
 
-<style scoped>
-button {
-  padding:6px 8px;
-  border-radius:6px;
-  border:1px solid #ccc;
-  background:white;
-  cursor:pointer;
+const router = useRouter();
+const fichas = ref([]);
+const loading = ref(false);
+const error = ref("");
+
+async function load() {
+  loading.value = true;
+  error.value = "";
+  try {
+    const data = await listFichas();
+
+    // 🔥 Correção segura: garante que sempre seja um array
+    const arr = Array.isArray(data)
+      ? data
+      : Array.isArray(data?.results)
+      ? data.results
+      : [];
+
+    // Mantém sua lógica de normalização de IDs
+    fichas.value = arr.map(d => ({
+      ...d,
+      id: d.id ?? d.pk ?? d.id_ficha ?? null
+    }));
+  } catch (err) {
+    console.error(err);
+    error.value = "Erro ao carregar fichas.";
+  } finally {
+    loading.value = false;
+  }
 }
-</style>
+
+function ver(id) {
+  router.push({ name: "fichaDetail", params: { id } });
+}
+
+function editar(id) {
+  // 🔥 Rota corrigida para não causar erro
+  router.push({ name: "fichaForm", params: { id } });
+}
+
+function novo() {
+  // 🔥 Rota corrigida conforme seu router atual
+  router.push({ name: "fichaForm" });
+}
+
+onMounted(load);
+</script>
