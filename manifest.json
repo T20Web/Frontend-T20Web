@@ -10,7 +10,7 @@
   "theme_color": "#ffffff",
   "icons": [
     {
-      "src": "https://frontend-t20-web-flge.vercel.app/assets/T20WebIcon__1_-removebg-preview-aDEzaN0J.png",
+      "src": "src/assets/android/android-launchericon-512-512.png",
       "type": "image/png",
       "sizes": "32x32",
       "isSquare": true,
