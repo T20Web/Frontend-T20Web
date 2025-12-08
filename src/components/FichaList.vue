@@ -1,27 +1,3 @@
-<template>
-  <section>
-    <h2>Fichas</h2>
-
-    <div style="margin-bottom:12px;">
-      <button @click="novo">Criar ficha</button>
-    </div>
-
-    <div v-if="loading">Carregando fichas...</div>
-    <div v-else-if="error" style="color:tomato">{{ error }}</div>
-    <ul v-else>
-      <li v-for="f in fichas" :key="f.id" style="margin-bottom:8px;">
-        <strong>{{ f.title }}</strong> — <small>{{ f.description }}</small>
-        <div style="margin-top:4px;">
-          <button @click="ver(f.id)">Ver</button>
-          <button @click="editar(f.id)">Editar</button>
-        </div>
-      </li>
-    </ul>
-
-    <div v-if="!fichas.length && !loading">Nenhuma ficha encontrada.</div>
-  </section>
-</template>
-
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
@@ -38,18 +14,33 @@ async function load() {
   try {
     const data = await listFichas();
 
-    // 🔥 Correção segura: garante que sempre seja um array
-    const arr = Array.isArray(data)
-      ? data
-      : Array.isArray(data?.results)
-      ? data.results
-      : [];
+    // Normaliza formatos: array, paginado {results:[]}, {data: []}, ou objeto único
+    let items = [];
+    if (Array.isArray(data)) {
+      items = data;
+    } else if (data && Array.isArray(data.results)) {
+      items = data.results;
+    } else if (data && Array.isArray(data.data)) {
+      items = data.data;
+    } else if (data && typeof data === "object") {
+      // Se veio um objeto único, tenta extrair lista ou transforma em lista única
+      if (data.items && Array.isArray(data.items)) {
+        items = data.items;
+      } else {
+        items = [data];
+      }
+    } else {
+      items = [];
+    }
 
-    // Mantém sua lógica de normalização de IDs
-    fichas.value = arr.map(d => ({
-      ...d,
-      id: d.id ?? d.pk ?? d.id_ficha ?? null
+    fichas.value = items.map(d => ({
+      // normaliza id: id, pk, id_ficha, etc.
+      id: d.id ?? d.pk ?? d.id_ficha ?? d.pk_ficha ?? null,
+      title: d.title ?? d.name ?? d.titulo ?? "",
+      description: d.description ?? d.desc ?? d.descricao ?? ""
+      // mantenha outros campos se precisar
     }));
+
   } catch (err) {
     console.error(err);
     error.value = "Erro ao carregar fichas.";
@@ -59,17 +50,17 @@ async function load() {
 }
 
 function ver(id) {
-  router.push({ name: "fichaDetail", params: { id } });
+  if (!id) return (error.value = "ID inválido");
+  router.push({ name: "fichas-detail", params: { id } });
 }
 
 function editar(id) {
-  // 🔥 Rota corrigida para não causar erro
-  router.push({ name: "fichaForm", params: { id } });
+  if (!id) return (error.value = "ID inválido");
+  router.push({ name: "fichas-editar", params: { id } });
 }
 
 function novo() {
-  // 🔥 Rota corrigida conforme seu router atual
-  router.push({ name: "fichaForm" });
+  router.push({ name: "fichas-nova" }); 
 }
 
 onMounted(load);

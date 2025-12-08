@@ -5,7 +5,7 @@ const BASE = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000/api";
 
 const api = axios.create({
   baseURL: BASE,
-  timeout: 10000,
+  timeout: 100000,
 });
 
 // ------------------------------
@@ -22,11 +22,8 @@ function normalizeAxiosError(err) {
 }
 
 // ------------------------------
-// Autenticação (opcional)
+// Autenticação
 // ------------------------------
-// Seu backend não tem login ainda.
-// Mantive o código, mas desativei para não quebrar nada.
-
 export function setAuthToken(token) {
   if (token) {
     api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
@@ -41,102 +38,65 @@ export function logout() {
   setAuthToken(null);
 }
 
+// Inicializa token
 const existingToken = localStorage.getItem("token");
 if (existingToken) {
   api.defaults.headers.common["Authorization"] = `Bearer ${existingToken}`;
 }
 
 // ------------------------------
-// Usuários (corrigido para /usuarios/)
+// Usuário / Auth
 // ------------------------------
-export async function listUsuarios() {
+export async function loginApi(payload) {
   try {
-    const res = await api.get("/usuarios/");
+    const res = await api.post("/auth/login/", payload);
+    return res.data; // espera { token, user }
+  } catch (err) {
+    normalizeAxiosError(err);
+  }
+}
+
+export async function registerApi(payload) {
+  try {
+    const res = await api.post("/auth/register/", payload);
+    return res.data; // espera { token, user } ou só user
+  } catch (err) {
+    normalizeAxiosError(err);
+  }
+}
+
+export async function getMe() {
+  try {
+    const res = await api.get("/auth/me/");
     return res.data;
   } catch (err) {
     normalizeAxiosError(err);
   }
 }
 
-export async function getUsuario(id) {
-  try {
-    const res = await api.get(`/usuarios/${id}/`);
-    return res.data;
-  } catch (err) {
-    normalizeAxiosError(err);
-  }
-}
-
-export async function createUsuario(payload) {
-  try {
-    const res = await api.post("/usuarios/", payload);
-    return res.data;
-  } catch (err) {
-    normalizeAxiosError(err);
-  }
-}
-
 // ------------------------------
-// Fichas
-// ------------------------------
+// Fichas CRUD (mantido)
 export async function listFichas() {
   try {
     const res = await api.get("/fichas/");
     return res.data;
-  } catch (err) {
-    normalizeAxiosError(err);
-  }
+  } catch (err) { normalizeAxiosError(err); }
 }
-
 export async function getFicha(id) {
-  try {
-    const res = await api.get(`/fichas/${id}/`);
-    return res.data;
-  } catch (err) {
-    normalizeAxiosError(err);
-  }
+  try { const res = await api.get(`/fichas/${id}/`); return res.data; }
+  catch (err) { normalizeAxiosError(err); }
 }
-
 export async function createFicha(payload) {
-  try {
-    const res = await api.post("/fichas/", payload);
-    return res.data;
-  } catch (err) {
-    normalizeAxiosError(err);
-  }
+  try { const res = await api.post("/fichas/", payload); return res.data; }
+  catch (err) { normalizeAxiosError(err); }
 }
-
 export async function updateFicha(id, payload) {
-  try {
-    const res = await api.patch(`/fichas/${id}/`, payload);
-    return res.data;
-  } catch (err) {
-    normalizeAxiosError(err);
-  }
+  try { const res = await api.patch(`/fichas/${id}/`, payload); return res.data; }
+  catch (err) { normalizeAxiosError(err); }
 }
-
 export async function deleteFicha(id) {
-  try {
-    const res = await api.delete(`/fichas/${id}/`);
-    return res.status === 204 ? {} : res.data;
-  } catch (err) {
-    normalizeAxiosError(err);
-  }
+  try { const res = await api.delete(`/fichas/${id}/`); return res.status === 204 ? {} : res.data; }
+  catch (err) { normalizeAxiosError(err); }
 }
-// ==== FAKE TEMPORÁRIO PARA EVITAR ERRO DE IMPORT ====
-// Remova depois
-export async function loginApi() {
-  return { token: "fake-token" };
-}
-
-export async function registerApi() {
-  return { user: "fake-user" };
-}
-
-// ------------------------------
-// Export/Import removidos
-// ------------------------------
-// Esses endpoints não existem no seu backend atual.
-// Depois posso recriar se você quiser.
 
 export { api };

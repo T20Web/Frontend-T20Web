@@ -15,10 +15,17 @@
       <div style="display:flex; gap:12px; align-items:center;">
         <router-link to="/" class="nav-link">Home</router-link>
         <router-link to="/fichas" class="nav-link">Fichas</router-link>
-        <router-link to="/login" class="nav-link">Login</router-link>
-        <router-link to="/register" class="nav-link">Registrar</router-link>
 
-        <!-- Theme toggle aqui -->
+        <!-- Mostrar Login / Registrar se não estiver autenticado -->
+        <template v-if="!auth.isAuthenticated">
+          <router-link to="/login" class="nav-link">Login</router-link>
+          <router-link to="/register" class="nav-link">Registrar</router-link>
+        </template>
+
+        <!-- Mostrar botão Sair se estiver autenticado -->
+        <button v-else @click="auth.logout" class="nav-link" style="cursor:pointer; background:none; border:none; padding:6px; font-weight:600;">Sair</button>
+
+        <!-- Theme toggle -->
         <ThemeSwitch />
       </div>
     </nav>
@@ -27,9 +34,13 @@
 
 <script setup>
 import ThemeSwitch from './ThemeSwitch.vue';
+import { useAuth } from "../composables/useAuth";
+
+const auth = useAuth();
 </script>
 
 <style scoped>
 .nav-link { color:var(--muted); text-decoration:none; font-weight:600; padding:6px; border-radius:8px; }
 .nav-link:hover { color:var(--text); background:rgba(0,0,0,0.03); transform:translateY(-2px); transition: .12s ease; }
+button.nav-link:hover { background:rgba(0,0,0,0.03); transform:translateY(-2px); }
 </style>

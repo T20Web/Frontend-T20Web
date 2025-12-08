@@ -1,21 +1,20 @@
-<!-- src/components/FichaForm.vue -->
 <template>
   <section style="max-width:640px;">
     <h2>{{ isEdit ? "Editar ficha" : "Criar ficha" }}</h2>
 
     <form @submit.prevent="submit">
       <div style="margin-bottom:8px;">
-        <label for="title">Título</label><br/>
+        <label for="title">Título</label><br />
         <input id="title" v-model="form.title" required />
       </div>
 
       <div style="margin-bottom:8px;">
-        <label for="description">Descrição</label><br/>
+        <label for="description">Descrição</label><br />
         <textarea id="description" v-model="form.description" rows="4"></textarea>
       </div>
 
       <div style="margin-bottom:8px;">
-        <label for="attributes">Atributos (JSON ou texto)</label><br/>
+        <label for="attributes">Atributos (JSON ou texto)</label><br />
         <textarea id="attributes" v-model="form.attributes" rows="6"></textarea>
       </div>
 
@@ -52,11 +51,11 @@ async function load() {
   loading.value = true;
   try {
     const data = await getFicha(route.params.id);
-    // Preenche o form (adaptar campos conforme API)
     form.value.title = data.title || "";
     form.value.description = data.description || "";
-    // attributes pode ser objeto; converte para string
-    form.value.attributes = typeof data.attributes === "object" ? JSON.stringify(data.attributes, null, 2) : (data.attributes || "");
+    form.value.attributes = typeof data.attributes === "object" 
+      ? JSON.stringify(data.attributes, null, 2) 
+      : (data.attributes || "");
   } catch (err) {
     console.error(err);
     error.value = "Erro ao carregar ficha para edição.";
@@ -68,35 +67,34 @@ async function load() {
 async function submit() {
   loading.value = true;
   error.value = "";
+
   try {
-    // Tenta parse do attributes (se for JSON)
     let payload = { title: form.value.title, description: form.value.description };
+
     try {
       payload.attributes = JSON.parse(form.value.attributes);
     } catch {
-      payload.attributes = form.value.attributes; // envia como texto se não for JSON
+      payload.attributes = form.value.attributes;
     }
 
     if (isEdit.value) {
       await updateFicha(route.params.id, payload);
-      alert("Ficha atualizada com sucesso.");
-      router.push({ name: "fichaDetail", params: { id: route.params.id } });
+      router.push({ name: "fichas-detail", params: { id: route.params.id } }); // ⚡ rota correta
     } else {
       await createFicha(payload);
-      alert("Ficha criada com sucesso.");
-      router.push({ name: "fichas" });
+      router.push({ name: "fichas" }); // ⚡ rota correta
     }
   } catch (err) {
     console.error(err);
-    error.value = "Erro ao salvar ficha.";
+    if (err.status === 403) {
+      error.value = "Erro: credenciais de autenticação não fornecidas.";
+    } else {
+      error.value = "Erro ao salvar ficha.";
+    }
   } finally {
     loading.value = false;
   }
 }
 
 onMounted(load);
-
-/* Mock local:
-   Se quiser testar sem backend, substitua createFicha/updateFicha por await new Promise(r=>setTimeout(r,500));
-*/
 </script>

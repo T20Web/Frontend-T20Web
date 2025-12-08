@@ -1,4 +1,3 @@
-<!-- src/components/Home.vue -->
 <template>
   <section class="hero" aria-labelledby="hero-title">
     <div style="flex:1; min-width:220px;">
@@ -7,18 +6,26 @@
       <h2 id="hero-title" class="hero-title">Gerencie suas fichas com rapidez</h2>
 
       <p class="hero-sub">
-        Crie, edite e organize fichas de personagem — atributos, histórico e exportação simples. 
+        Crie, edite e organize fichas de personagem — atributos, histórico e exportação simples.
         Tudo em um lugar leve e prático para mestrar e jogar.
       </p>
 
       <div class="hero-ctas" style="margin-top:8px;">
         <router-link class="btn" to="/fichas" aria-label="Ver fichas">Ver fichas</router-link>
-      <router-link class="btn btn-secondary" to="/login" aria-label="Entrar">Login</router-link>
-      <router-link class="btn btn-secondary" to="/register" aria-label="Registrar">Registrar</router-link>
 
+        <!-- Botões de login/registro -->
+        <router-link v-if="!auth.isAuthenticated" class="btn btn-secondary" to="/login"
+          aria-label="Entrar">Login</router-link>
+        <router-link v-if="!auth.isAuthenticated" class="btn btn-secondary" to="/register"
+          aria-label="Registrar">Registrar</router-link>
+
+        <!-- Botão sair -->
+        <button v-if="auth.isAuthenticated" class="btn btn-danger" @click="logout">Sair</button>
       </div>
 
-      <p class="small-muted" style="margin-top:14px;">Dica: faça login para acessar suas fichas privadas. Sem conta? Registre-se — é rápido.</p>
+      <p class="small-muted" style="margin-top:14px;">
+        Dica: faça login para acessar suas fichas privadas. Sem conta? Registre-se — é rápido.
+      </p>
     </div>
 
     <aside class="hero-aside" aria-label="Últimas fichas">
@@ -58,11 +65,21 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { listFichas } from "../api";
+import { useAuth } from "../composables/useAuth";
 
 const router = useRouter();
 const loading = ref(false);
 const error = ref("");
 const latest = ref([]);
+
+// Composable de auth
+const auth = useAuth();
+
+// Logout
+function logout() {
+  auth.logout();
+  router.push("/login");
+}
 
 async function load() {
   loading.value = true;
@@ -106,6 +123,14 @@ onMounted(load);
 </script>
 
 <style scoped>
-.hero { opacity:0; transform:translateY(8px); transition:all .36s ease; }
-.hero.in { opacity:1; transform:translateY(0); }
+.hero {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: all .36s ease;
+}
+
+.hero.in {
+  opacity: 1;
+  transform: translateY(0);
+}
 </style>

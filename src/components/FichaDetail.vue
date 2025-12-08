@@ -8,7 +8,7 @@
     <div v-else-if="ficha">
       <p><strong>Descrição:</strong> {{ ficha.description }}</p>
       <p><strong>Atributos:</strong></p>
-      <pre>{{ ficha.attributes }}</pre>
+      <pre>{{ typeof ficha.attributes === "object" ? JSON.stringify(ficha.attributes, null, 2) : ficha.attributes }}</pre>
 
       <div style="margin-top:12px;">
         <button @click="editar">Editar</button>
@@ -38,15 +38,13 @@ async function load() {
   } catch (err) {
     console.error(err);
     error.value = "Erro ao carregar ficha.";
-    // mock example:
-    // ficha.value = { id, title: 'Ficha Ex', description: '...', attributes: { str:10 } };
   } finally {
     loading.value = false;
   }
 }
 
 function editar() {
-  router.push({ name: "fichaEditar", params: { id: route.params.id } });
+  router.push({ name: "fichas-editar", params: { id: route.params.id } });
 }
 
 onMounted(load);

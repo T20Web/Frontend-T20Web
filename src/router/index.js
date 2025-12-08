@@ -1,47 +1,35 @@
 import { createRouter, createWebHistory } from "vue-router";
-
 import Home from "../components/Home.vue";
-import FichaList from "../components/FichaList.vue";
-import FichaDetail from "../components/FichaDetail.vue";
-import FichaForm from "../components/FichaForm.vue";
 import Login from "../components/Login.vue";
 import Register from "../components/Register.vue";
+import FichaList from "../components/FichaList.vue";
+import FichaForm from "../components/FichaForm.vue";
+import FichaDetail from "../components/FichaDetail.vue";
+import { useAuth } from "../composables/useAuth";
 
 const routes = [
   { path: "/", name: "home", component: Home },
   { path: "/login", name: "login", component: Login },
   { path: "/register", name: "register", component: Register },
-
-  // Listagem de fichas
-  { path: "/fichas", name: "fichas", component: FichaList },
-
-  // Detalhe da ficha
-  { 
-    path: "/fichas/:id", 
-    name: "fichaDetail", 
-    component: FichaDetail,
-    props: true
-  },
-
-  // Criar nova ficha
-  { 
-    path: "/fichas/nova", 
-    name: "fichaNova", 
-    component: FichaForm 
-  },
-
-  // Editar ficha ─ ROTA QUE FALTAVA
-  { 
-    path: "/fichas/:id/editar", 
-    name: "fichaEditar", 
-    component: FichaForm,
-    props: true
-  },
+  { path: "/fichas", name: "fichas", component: FichaList, meta: { requiresAuth: true } },
+  { path: "/fichas/nova", name: "fichas-nova", component: FichaForm, props: { isNew: true }, meta: { requiresAuth: true } },
+  { path: "/fichas/:id", name: "fichas-detail", component: FichaDetail, props: true, meta: { requiresAuth: true } },
+  { path: "/fichas/:id/editar", name: "fichas-editar", component: FichaForm, props: true, meta: { requiresAuth: true } },
+  { path: "/:pathMatch(.*)*", redirect: "/" },
 ];
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes,
+});
+
+router.beforeEach(async (to, from, next) => {
+  const auth = useAuth();
+  if (to.meta.requiresAuth && !auth.isAuthenticated.value) {
+    next({ name: "login", query: { next: to.fullPath } });
+  } else {
+    next();
+  }
 });
 
 export default router;
