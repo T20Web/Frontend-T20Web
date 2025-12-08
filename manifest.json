@@ -6,7 +6,7 @@
   "orientation": "any",
   "scope": "/",
   "short_name": "frontend-t20-web-flge.vercel",
-  "start_url": "/",
+  "start_url": "/https://frontend-t20-web-flge.vercel.app/",
   "theme_color": "#ffffff",
   "icons": [
     {
