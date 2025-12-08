@@ -12,12 +12,12 @@
     {
       "src": "src/assets/android/android-launchericon-512-512.png",
       "type": "image/png",
-      "sizes": "32x32",
+      "sizes": "512x512",
       "isSquare": true,
       "isPng": true,
       "isWebp": false,
       "isJpg": false,
-      "width": 32,
+      "width": 512,
       "is512x512": true,
       "is256x256": false,
       "is192x192": false
