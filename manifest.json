@@ -10,7 +10,7 @@
   "theme_color": "#ffffff",
   "icons": [
     {
-      "src": "https://frontend-t20-web-flge.vercel.app/assets/src/assets/android/android-launchericon-512-512.png",
+      "src": "src/assets/android/android-launchericon-512-512.png",
       "type": "image/png",
       "sizes": "512x512",
       "isSquare": true,
@@ -23,7 +23,7 @@
       "is192x192": false
     }
  ,{
-      "src": "https://frontend-t20-web-flge.vercel.app/assets/src/assets/android/android-launchericon-192-192.png",
+      "src": "src/assets/android/android-launchericon-192-192.png",
       "type": "image/png",
       "sizes": "192x192",
       "isSquare": true,
