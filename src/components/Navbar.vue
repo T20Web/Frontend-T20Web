@@ -17,13 +17,13 @@
         <router-link to="/fichas" class="nav-link">Fichas</router-link>
 
         <!-- Mostrar Login / Registrar se não estiver autenticado -->
-        <template v-if="!auth.isAuthenticated">
+        <template v-if="!isAuthenticated">
           <router-link to="/login" class="nav-link">Login</router-link>
           <router-link to="/register" class="nav-link">Registrar</router-link>
         </template>
 
         <!-- Mostrar botão Sair se estiver autenticado -->
-        <button v-else @click="auth.logout" class="nav-link" style="cursor:pointer; background:none; border:none; padding:6px; font-weight:600;">Sair</button>
+        <button v-else @click="logout" class="nav-link" style="cursor:pointer; background:none; border:none; padding:6px; font-weight:600;">Sair</button>
 
         <!-- Theme toggle -->
         <ThemeSwitch />
@@ -35,8 +35,40 @@
 <script setup>
 import ThemeSwitch from './ThemeSwitch.vue';
 import { useAuth } from "../composables/useAuth";
+import { useRouter } from "vue-router";
+import { computed } from "vue";
 
 const auth = useAuth();
+const router = useRouter();
+
+// Computed resiliente: aceita vários formatos do useAuth (função, ref ou boolean)
+const isAuthenticated = computed(() => {
+  // se é função: chamamos
+  if (typeof auth.isAuthenticated === "function") {
+    try { return !!auth.isAuthenticated(); } catch (_) { return false; }
+  }
+  // se é ref ({ value: ... })
+  if (auth.isAuthenticated && typeof auth.isAuthenticated === "object" && "value" in auth.isAuthenticated) {
+    return !!auth.isAuthenticated.value;
+  }
+  // fallback: valor direto (boolean)
+  return !!auth.isAuthenticated;
+});
+
+function logout() {
+  // permitimos logout síncrono ou assíncrono conforme seu composable
+  try {
+    const result = auth.logout && auth.logout();
+    if (result && typeof result.then === "function") {
+      result.then(() => router.push("/login")).catch(() => router.push("/login"));
+    } else {
+      router.push("/login");
+    }
+  } catch (err) {
+    // garante redirecionamento mesmo que logout falhe
+    router.push("/login");
+  }
+}
 </script>
 
 <style scoped>

@@ -14,13 +14,13 @@
         <router-link class="btn" to="/fichas" aria-label="Ver fichas">Ver fichas</router-link>
 
         <!-- Botões de login/registro -->
-        <router-link v-if="!auth.isAuthenticated" class="btn btn-secondary" to="/login"
+        <router-link v-if="!isAuthenticated" class="btn btn-secondary" to="/login"
           aria-label="Entrar">Login</router-link>
-        <router-link v-if="!auth.isAuthenticated" class="btn btn-secondary" to="/register"
+        <router-link v-if="!isAuthenticated" class="btn btn-secondary" to="/register"
           aria-label="Registrar">Registrar</router-link>
 
         <!-- Botão sair -->
-        <button v-if="auth.isAuthenticated" class="btn btn-danger" @click="logout">Sair</button>
+        <button v-if="isAuthenticated" class="btn btn-danger" @click="logout">Sair</button>
       </div>
 
       <p class="small-muted" style="margin-top:14px;">
@@ -62,7 +62,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { listFichas } from "../api";
 import { useAuth } from "../composables/useAuth";
@@ -75,10 +75,29 @@ const latest = ref([]);
 // Composable de auth
 const auth = useAuth();
 
-// Logout
+// Computed resiliente (mesma lógica do Navbar)
+const isAuthenticated = computed(() => {
+  if (typeof auth.isAuthenticated === "function") {
+    try { return !!auth.isAuthenticated(); } catch (_) { return false; }
+  }
+  if (auth.isAuthenticated && typeof auth.isAuthenticated === "object" && "value" in auth.isAuthenticated) {
+    return !!auth.isAuthenticated.value;
+  }
+  return !!auth.isAuthenticated;
+});
+
+// Logout (chama composable e redireciona)
 function logout() {
-  auth.logout();
-  router.push("/login");
+  try {
+    const result = auth.logout && auth.logout();
+    if (result && typeof result.then === "function") {
+      result.then(() => router.push("/login")).catch(() => router.push("/login"));
+    } else {
+      router.push("/login");
+    }
+  } catch (err) {
+    router.push("/login");
+  }
 }
 
 async function load() {
