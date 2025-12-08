@@ -10,9 +10,22 @@
   "theme_color": "#ffffff",
   "icons": [
     {
-      "src": "src/assets/android/android-launchericon-192-192.png",
+      "src": "src/assets/android/android-launchericon-512-512.png",
       "type": "image/png",
       "sizes": "512x512",
+      "isSquare": true,
+      "isPng": true,
+      "isWebp": false,
+      "isJpg": false,
+      "width": 512,
+      "is512x512": true,
+      "is256x256": false,
+      "is192x192": false
+    }
+ ,{
+      "src": "src/assets/android/android-launchericon-192-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
       "isSquare": true,
       "isPng": true,
       "isWebp": false,
