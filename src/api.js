@@ -5,7 +5,7 @@
 import axios from "axios";
 
 // Base da API
-const BASE = "https://backend-t20web-lnil.onrender.com/";
+const BASE = "https://backend-t20web-lnil.onrender.com/api";
 
 const api = axios.create({
   baseURL: BASE,
