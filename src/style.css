@@ -100,7 +100,7 @@ button,
 
 .btn-secondary {
   background: transparent;
-  color: var(--primary) !important;
+  color: black;
   border: 1px solid #e6edf3;
 }
 

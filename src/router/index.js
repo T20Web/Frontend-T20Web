@@ -11,10 +11,33 @@ const routes = [
   { path: "/", name: "home", component: Home },
   { path: "/login", name: "login", component: Login },
   { path: "/register", name: "register", component: Register },
-  { path: "/fichas", name: "fichas", component: FichaList, meta: { requiresAuth: true } },
-  { path: "/fichas/nova", name: "fichas-nova", component: FichaForm, props: { isNew: true }, meta: { requiresAuth: true } },
-  { path: "/fichas/:id", name: "fichas-detail", component: FichaDetail, props: true, meta: { requiresAuth: true } },
-  { path: "/fichas/:id/editar", name: "fichas-editar", component: FichaForm, props: true, meta: { requiresAuth: true } },
+  {
+    path: "/fichas",
+    name: "fichas",
+    component: FichaList,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/fichas/:id",
+    name: "fichas-detail",
+    component: FichaDetail,
+    props: true,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/fichas/:id/editar",
+    name: "fichas-editar",
+    component: FichaForm,
+    props: (route) => ({ id: route.params.id, editMode: true }),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/ficha/nova",
+    name: "fichas-nova",
+    component: FichaForm,
+    props: { editMode: false },
+    meta: { requiresAuth: true },
+  },
   { path: "/:pathMatch(.*)*", redirect: "/" },
 ];
 

@@ -13,13 +13,9 @@
       <div class="hero-ctas" style="margin-top:8px;">
         <router-link class="btn" to="/fichas" aria-label="Ver fichas">Ver fichas</router-link>
 
-        <!-- Botões de login/registro -->
-        <router-link v-if="!isAuthenticated" class="btn btn-secondary" to="/login"
-          aria-label="Entrar">Login</router-link>
-        <router-link v-if="!isAuthenticated" class="btn btn-secondary" to="/register"
-          aria-label="Registrar">Registrar</router-link>
+        <router-link v-if="!isAuthenticated" class="btn btn-secondary" to="/login" aria-label="Entrar">Login</router-link>
+        <router-link v-if="!isAuthenticated" class="btn btn-secondary" to="/register" aria-label="Registrar">Registrar</router-link>
 
-        <!-- Botão sair -->
         <button v-if="isAuthenticated" class="btn btn-danger" @click="logout">Sair</button>
       </div>
 
@@ -38,8 +34,10 @@
         <ul v-else style="list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px;">
           <li v-for="f in latest" :key="f.id" class="ficha-item" role="article">
             <div style="display:flex; flex-direction:column;">
-              <strong style="font-size:0.95rem;">{{ f.title }}</strong>
-              <small class="small-muted">{{ f.subtitle }}</small>
+              <strong style="font-size:0.95rem;">{{ f.title || "Ficha sem nome" }}</strong>
+              <small class="small-muted">
+                {{ f.classe || "-" }} | Nível {{ f.nivel ?? "?" }} | Jogador: {{ f.jogador || "-" }}
+              </small>
             </div>
             <div style="display:flex; gap:8px; align-items:center;">
               <button class="btn-secondary" @click="ver(f.id)" aria-label="Ver ficha">Ver</button>
@@ -72,10 +70,7 @@ const loading = ref(false);
 const error = ref("");
 const latest = ref([]);
 
-// Composable de auth
 const auth = useAuth();
-
-// Computed resiliente (mesma lógica do Navbar)
 const isAuthenticated = computed(() => {
   if (typeof auth.isAuthenticated === "function") {
     try { return !!auth.isAuthenticated(); } catch (_) { return false; }
@@ -86,7 +81,6 @@ const isAuthenticated = computed(() => {
   return !!auth.isAuthenticated;
 });
 
-// Logout (chama composable e redireciona)
 function logout() {
   try {
     const result = auth.logout && auth.logout();
@@ -95,7 +89,7 @@ function logout() {
     } else {
       router.push("/login");
     }
-  } catch (err) {
+  } catch {
     router.push("/login");
   }
 }
@@ -105,28 +99,31 @@ async function load() {
   error.value = "";
   try {
     const data = await listFichas();
-    // tenta normalizar: pega os últimos 3
-    if (Array.isArray(data)) {
-      latest.value = data.slice(0, 3).map(item => ({
-        id: item.id,
-        title: item.title || item.name || `Ficha ${item.id}`,
-        subtitle: item.description ? item.description.slice(0, 40) : (item.subtitle || "")
+
+    // normaliza e pega últimos 3 fichas
+    let fichas = [];
+    if (Array.isArray(data.results)) fichas = data.results;
+    else if (Array.isArray(data)) fichas = data;
+    else fichas = [];
+
+    latest.value = fichas
+      .sort((a,b) => new Date(b.created_at) - new Date(a.created_at))
+      .slice(0,3)
+      .map(f => ({
+        id: f.id,
+        title: f.nome || f.title || `Ficha ${f.id}`,
+        classe: f.classe || "-",
+        nivel: f.nivel ?? "?",
+        jogador: f.jogador || "-",
+        description: f.descricao || f.description || ""
       }));
-    } else {
-      latest.value = [];
-    }
+
   } catch (err) {
     console.error(err);
-    error.value = err.message || "Erro ao carregar últimas fichas.";
-    // fallback mock para não deixar vazio
-    latest.value = [
-      { id: "m-1", title: "Ficha Exemplo", subtitle: "Teste local" },
-      { id: "m-2", title: "Mago Sombrio", subtitle: "NPC" },
-      { id: "m-3", title: "Aventureiro X", subtitle: "RPG" },
-    ];
+    error.value = "Erro ao carregar últimas fichas.";
+    latest.value = [];
   } finally {
     loading.value = false;
-    // animação: adiciona classe in para fade-up (aplica ao container inteiro)
     setTimeout(() => {
       const el = document.querySelector(".hero");
       if (el) el.classList.add("in");
@@ -147,7 +144,6 @@ onMounted(load);
   transform: translateY(8px);
   transition: all .36s ease;
 }
-
 .hero.in {
   opacity: 1;
   transform: translateY(0);

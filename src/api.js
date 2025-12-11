@@ -1,3 +1,7 @@
+// =========================================================
+// api.js — PLUGIN AXIOS
+// =========================================================
+
 import axios from "axios";
 
 // Base da API
@@ -9,7 +13,7 @@ const api = axios.create({
 });
 
 // ------------------------------
-// Tratamento de erros da API
+// Tratamento global de erros
 // ------------------------------
 function normalizeAxiosError(err) {
   if (err.response) {
@@ -22,7 +26,7 @@ function normalizeAxiosError(err) {
 }
 
 // ------------------------------
-// Autenticação
+// AUTH TOKEN (Plugin)
 // ------------------------------
 export function setAuthToken(token) {
   if (token) {
@@ -38,19 +42,20 @@ export function logout() {
   setAuthToken(null);
 }
 
-// Inicializa token
+// Recupera token salvo
 const existingToken = localStorage.getItem("token");
 if (existingToken) {
   api.defaults.headers.common["Authorization"] = `Bearer ${existingToken}`;
 }
 
-// ------------------------------
-// Usuário / Auth
-// ------------------------------
+// =========================================================
+// SERVICES — Auth
+// =========================================================
+
 export async function loginApi(payload) {
   try {
     const res = await api.post("/auth/login/", payload);
-    return res.data; // espera { token, user }
+    return res.data; 
   } catch (err) {
     normalizeAxiosError(err);
   }
@@ -59,7 +64,7 @@ export async function loginApi(payload) {
 export async function registerApi(payload) {
   try {
     const res = await api.post("/auth/register/", payload);
-    return res.data; // espera { token, user } ou só user
+    return res.data;
   } catch (err) {
     normalizeAxiosError(err);
   }
@@ -74,29 +79,57 @@ export async function getMe() {
   }
 }
 
-// ------------------------------
-// Fichas CRUD (mantido)
+// =========================================================
+// SERVICES — Fichas CRUD
+// =========================================================
+
 export async function listFichas() {
   try {
     const res = await api.get("/fichas/");
     return res.data;
-  } catch (err) { normalizeAxiosError(err); }
+  } catch (err) {
+    normalizeAxiosError(err);
+  }
 }
+
 export async function getFicha(id) {
-  try { const res = await api.get(`/fichas/${id}/`); return res.data; }
-  catch (err) { normalizeAxiosError(err); }
+  try {
+    const res = await api.get(`/fichas/${id}/`);
+    return res.data;
+  } catch (err) {
+    normalizeAxiosError(err);
+  }
 }
+
 export async function createFicha(payload) {
-  try { const res = await api.post("/fichas/", payload); return res.data; }
-  catch (err) { normalizeAxiosError(err); }
+  try {
+    const res = await api.post("/fichas/", payload);
+    return res.data;
+  } catch (err) {
+    normalizeAxiosError(err);
+  }
 }
+
 export async function updateFicha(id, payload) {
-  try { const res = await api.patch(`/fichas/${id}/`, payload); return res.data; }
-  catch (err) { normalizeAxiosError(err); }
+  try {
+    const res = await api.patch(`/fichas/${id}/`, payload);
+    return res.data;
+  } catch (err) {
+    normalizeAxiosError(err);
+  }
 }
+
 export async function deleteFicha(id) {
-  try { const res = await api.delete(`/fichas/${id}/`); return res.status === 204 ? {} : res.data; }
-  catch (err) { normalizeAxiosError(err); }
+  try {
+    const res = await api.delete(`/fichas/${id}/`);
+    return res.status === 204 ? {} : res.data;
+  } catch (err) {
+    normalizeAxiosError(err);
+  }
 }
+
+// =========================================================
+// EXPORT PRINCIPAL
+// =========================================================
 
 export { api };

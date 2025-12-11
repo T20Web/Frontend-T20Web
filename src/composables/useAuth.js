@@ -14,8 +14,8 @@ export function useAuth() {
 
     async function login(email, password) {
         const data = await loginApi({ email, password });
-        if (!data.token) throw new Error("Token não recebido do backend.");
-        setAuthToken(data.token);
+        if (!data.access) throw new Error("Token não recebido do backend.");
+        setAuthToken(data.access);
         setUser(data.user);
         return data.user;
     }
@@ -23,11 +23,11 @@ export function useAuth() {
     async function register(name, email, password) {
         const data = await registerApi({ name, email, password });
 
-        if (!data.token) {
+        if (!data.access) {
             return await login(email, password);
         }
 
-        setAuthToken(data.token);
+        setAuthToken(data.access);
 
         if (!data.user) {
             const me = await fetchMe();

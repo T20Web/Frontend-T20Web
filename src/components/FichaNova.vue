@@ -171,7 +171,7 @@ const form = reactive({
   nome: "",
   raca: "",
   classe: "",
-  nivel: 1,
+  nivel: 5,
   tendencia: "",
   jogador: "",
   atributos: { ...defaultAttributes },
@@ -227,7 +227,7 @@ function resetForm() {
   form.nome = "";
   form.raca = "";
   form.classe = "";
-  form.nivel = 1;
+  form.nivel = 5;
   form.tendencia = "";
   form.jogador = "";
   form.atributos = { ...defaultAttributes };
@@ -270,7 +270,7 @@ async function submit() {
     nome: form.nome,
     raca: form.raca,
     classe: form.classe,
-    nivel: Number(form.nivel) || 1,
+    nivel: 5,
     tendencia: form.tendencia,
     jogador: form.jogador,
     atributos: { ...form.atributos },
