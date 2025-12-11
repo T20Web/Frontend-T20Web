@@ -4,7 +4,7 @@
 
     <form @submit.prevent="submit">
       <div v-if="error" style="color:tomato">{{ error }}</div>
-      <div v-if="success" style="color:green">{{ success }}</div>
+      <div v-if="success" style="color:green">{{ success }}</div> 
 
       <!-- Dados básicos -->
       <div style="margin-bottom:8px;">
