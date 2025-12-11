@@ -53,7 +53,7 @@
           <div class="small-muted" style="font-size:0.85rem;">Comece agora</div>
           <div style="font-weight:700;">Crie sua primeira ficha</div>
         </div>
-        <router-link to="/ficha/nova" class="btn" aria-label="Criar ficha">Criar</router-link>
+        <router-link to="/fichas/nova" class="btn" aria-label="Criar ficha">Criar</router-link>
       </div>
     </aside>
   </section>

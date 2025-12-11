@@ -32,7 +32,7 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: "/ficha/nova",
+    path: "/fichas/nova",
     name: "fichas-nova",
     component: FichaForm,
     props: { editMode: false },
